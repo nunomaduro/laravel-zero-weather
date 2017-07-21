@@ -8,11 +8,11 @@ use NunoMaduro\ZeroFramework\Commands\AbstractCommand;
 class DefaultCommand extends AbstractCommand
 {
     /**
-     * The name and signature of the console command.
+     * The name of the command.
      *
      * @var string
      */
-    protected $signature = 'weather';
+    protected $name = 'weather';
 
     /**
      * The console command description.
@@ -20,19 +20,6 @@ class DefaultCommand extends AbstractCommand
      * @var string
      */
     protected $description = "Search for today weather information";
-
-    /**
-     * Creates a new instance of the class.
-     *
-     * @param \Zttp\ZttpRequest $zttp
-     */
-    public function __construct(ZttpRequest $zttp)
-    {
-        parent::__construct();
-
-        // Dependency resolved by the Laravel Container...
-        $this->zttp = $zttp;
-    }
 
     /**
      * Execute the console command. Here goes the command
@@ -43,7 +30,9 @@ class DefaultCommand extends AbstractCommand
     public function handle(): void
     {
         // Use the HTTP client to ask today is weather:
-        $response = $this->zttp->get('https://www.metaweather.com/api/location/44418/')
+        $response = $this->getContainer()
+            ->make(ZttpRequest::class)
+            ->get('https://www.metaweather.com/api/location/44418/')
             ->json()['consolidated_weather'];
 
         // Parses the response and build a table.
